@@ -9,6 +9,7 @@ This project implements a deep learning solution for detecting and classifying d
 - **Data Preprocessing**: Automated dataset splitting and image preprocessing
 - **Model Visualization**: Includes training progress tracking and confusion matrix analysis
 - **Export Capabilities**: Save trained models and training history for future use
+- **Inference Pipeline**: Ready-to-use code for making predictions on new images
 
 ## Supported Disease Classes
 The model can identify the following conditions:
@@ -46,6 +47,69 @@ The CNN model features:
 - Powdery Mildew: 87% precision, 81% recall
 - Sooty Mould: 81% precision, 90% recall
 
+## Quick Start: Making Predictions
+
+### Load the Model
+```python
+from tensorflow import keras
+
+model_path = '/content/drive/MyDrive/mango_disease_model.keras'
+model = keras.models.load_model(model_path)
+model.summary()
+```
+
+### Make Predictions on New Images
+```python
+import cv2
+import tensorflow as tf
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Load and preprocess image
+image_path = "path_to_your_mango_leaf_image.jpg"
+image = cv2.imread(image_path)
+image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+# Display the test image
+plt.imshow(image)
+plt.title("Test Image")
+plt.xticks([])
+plt.yticks([])
+plt.show()
+
+# Preprocess for model input
+img = tf.keras.preprocessing.image.load_img(image_path, target_size=(256, 256))
+input_arr = tf.keras.preprocessing.image.img_to_array(img)
+input_arr = np.array([input_arr])
+
+# Make prediction
+prediction = model.predict(input_arr)
+result_index = np.argmax(prediction)
+
+# Class names
+class_name = [
+    'Anthracnose',
+    'Bacterial Canker', 
+    'Cutting Weevil',
+    'Die Back',
+    'Gall Midge',
+    'Healthy',
+    'Powdery Mildew',
+    'Sooty Mould'
+]
+
+# Display result
+model_prediction = class_name[result_index]
+plt.imshow(image)
+plt.title(f"Disease Name: {model_prediction}")
+plt.xticks([])
+plt.yticks([])
+plt.show()
+
+print(f"Predicted Disease: {model_prediction}")
+print(f"Confidence: {np.max(prediction)*100:.2f}%")
+```
+
 ## Dataset
 - **Total Images**: 3,998 mango leaf images
 - **Training Set**: 2,798 images (70%)
@@ -63,7 +127,7 @@ The CNN model features:
 
 ### Required Libraries
 ```bash
-pip install tensorflow matplotlib pillow scikit-learn seaborn pandas
+pip install tensorflow matplotlib pillow scikit-learn seaborn pandas opencv-python
 ```
 
 ## Usage
@@ -87,23 +151,8 @@ drive.mount('/content/drive')
 # - Loss: Categorical Crossentropy
 ```
 
-### 3. Making Predictions
-```python
-from tensorflow.keras.models import load_model
-
-# Load trained model
-model = load_model('/content/drive/MyDrive/mango_disease_model.keras')
-
-# Prepare test images
-test_set = tf.keras.utils.image_dataset_from_directory(
-    '/content/drive/MyDrive/dataset/mango/test',
-    image_size=(256, 256),
-    batch_size=32
-)
-
-# Make predictions
-predictions = model.predict(test_set)
-```
+### 3. Making Predictions (as shown above)
+Use the provided inference code to test the model on new mango leaf images.
 
 ## File Structure
 ```
@@ -118,25 +167,21 @@ Mango_Disease_Detection/
 └── README.md                        # This file
 ```
 
-## Key Features Implemented
+## Model Details
 
-### Data Preprocessing
-- Automatic dataset splitting (70/20/10)
-- Image resizing to 256×256 pixels
-- Data validation and integrity checks
-- Class-balanced distribution
+### Architecture Summary
+```
+Total params: 70,787,450 (270.03 MB)
+Trainable params: 23,595,816 (90.01 MB)
+Non-trainable params: 0 (0.00 B)
+Optimizer params: 47,191,634 (180.02 MB)
+```
 
-### Model Optimization
-- Progressive convolutional architecture
-- Dropout regularization to prevent overfitting
-- Learning rate optimization
-- Early stopping implementation
-
-### Evaluation Metrics
-- Comprehensive classification reports
-- Confusion matrix visualization
-- Precision, recall, and F1-score tracking
-- Training/validation accuracy monitoring
+### Key Features Implemented
+- **Data Preprocessing**: Automatic dataset splitting (70/20/10)
+- **Image Processing**: Resizing to 256×256 pixels with RGB conversion
+- **Model Optimization**: Dropout regularization and learning rate optimization
+- **Evaluation Metrics**: Comprehensive classification reports and confusion matrices
 
 ## Results & Insights
 - The model shows excellent performance on most disease classes
@@ -156,8 +201,10 @@ Mango_Disease_Detection/
 - Potential for improvement with more diverse datasets
 - Could benefit from data augmentation techniques
 
+
 ## Contributors
 This project demonstrates the application of deep learning in agricultural technology, specifically for plant disease detection and classification.
 
 ## License
 This project is intended for educational and research purposes. Please ensure proper attribution when using or modifying the code.
+
