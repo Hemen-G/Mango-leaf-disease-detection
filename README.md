@@ -1,175 +1,98 @@
 # Mango Disease Detection
 
 ## Project Overview
-This project implements a deep learning solution for detecting and classifying diseases in mango leaves using convolutional neural networks (CNNs). The system can identify 8 different conditions affecting mango plants, including both healthy leaves and various disease states.
+A comprehensive deep learning solution for detecting and classifying diseases in mango leaves. This project includes both model training and a ready-to-use demo for real-time disease prediction.
 
-## Features
-- **Multi-class Classification**: Detects 8 different mango leaf conditions
-- **High Accuracy**: Achieves 90% overall accuracy on validation data
-- **Data Preprocessing**: Automated dataset splitting and image preprocessing
-- **Model Visualization**: Includes training progress tracking and confusion matrix analysis
-- **Export Capabilities**: Save trained models and training history for future use
-- **Inference Pipeline**: Ready-to-use code for making predictions on new images
+## 📁 Project Structure
+```
+Mango_Disease_Detection/
+├── Mango_Disease_detection.ipynb          # Main training notebook
+├── demo_for_mango_disease_detection_.ipynb # Demo & inference notebook
+├── mango_disease_model.keras              # Pre-trained model (90MB)
+├── training_history.json                  # Training metrics & history
+├── dataset/
+│   ├── train/                            # 2,798 training images (70%)
+│   ├── validation/                       # 800 validation images (20%)
+│   └── test/                             # 400 test images (10%)
+└── README.md                             # Project documentation
+```
 
-## Supported Disease Classes
-The model can identify the following conditions:
-1. **Anthracnose** - Fungal disease causing dark, sunken lesions
-2. **Bacterial Canker** - Bacterial infection leading to canker formation
-3. **Cutting Weevil** - Pest damage from weevil infestations
-4. **Die Back** - Progressive dying back of twigs and branches
-5. **Gall Midge** - Pest-induced gall formations
-6. **Healthy** - Disease-free mango leaves
-7. **Powdery Mildew** - Fungal infection with white powdery coating
-8. **Sooty Mould** - Fungal growth on honeydew secretions
+## 🚀 Quick Start - Demo
 
-## Model Architecture
-The CNN model features:
-- **Input Layer**: 256×256×3 RGB images
-- **Convolutional Blocks**: 5 blocks with increasing filters (32→512)
-- **Pooling Layers**: MaxPooling after each convolutional block
-- **Dropout Layers**: For regularization (25% and 40% dropout rates)
-- **Dense Layers**: 1024-unit hidden layer with 8-unit softmax output
-- **Total Parameters**: ~23.6 million trainable parameters
+### Run the Demo Notebook:
+The `demo_for_mango_disease_detection_.ipynb` provides a complete inference pipeline:
 
-## Performance Metrics
-- **Overall Accuracy**: 90%
-- **Precision**: 91% (macro average)
-- **Recall**: 90% (macro average)
-- **F1-Score**: 90% (macro average)
-
-### Individual Class Performance:
-- Cutting Weevil: 100% precision and recall
-- Die Back: 98% precision and recall
-- Healthy: 97% precision, 91% recall
-- Anthracnose: 98% precision, 86% recall
-- Bacterial Canker: 90% precision, 86% recall
-- Gall Midge: 76% precision, 90% recall
-- Powdery Mildew: 87% precision, 81% recall
-- Sooty Mould: 81% precision, 90% recall
-
-## Quick Start: Making Predictions
-
-### Load the Model
 ```python
+# Load pre-trained model
 from tensorflow import keras
-
 model_path = '/content/drive/MyDrive/mango_disease_model.keras'
 model = keras.models.load_model(model_path)
+
+# Test the model
 model.summary()
 ```
 
-### Make Predictions on New Images
+### Make Predictions:
 ```python
 import cv2
 import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Load and preprocess image
-image_path = "path_to_your_mango_leaf_image.jpg"
-image = cv2.imread(image_path)
-image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+# Load your mango leaf image
+image_path = "/path/to/your/mango_leaf.jpg"
 
-# Display the test image
-plt.imshow(image)
-plt.title("Test Image")
-plt.xticks([])
-plt.yticks([])
-plt.show()
-
-# Preprocess for model input
-img = tf.keras.preprocessing.image.load_img(image_path, target_size=(256, 256))
-input_arr = tf.keras.preprocessing.image.img_to_array(img)
-input_arr = np.array([input_arr])
-
-# Make prediction
-prediction = model.predict(input_arr)
-result_index = np.argmax(prediction)
-
-# Class names
-class_name = [
-    'Anthracnose',
-    'Bacterial Canker', 
-    'Cutting Weevil',
-    'Die Back',
-    'Gall Midge',
-    'Healthy',
-    'Powdery Mildew',
-    'Sooty Mould'
-]
-
-# Display result
-model_prediction = class_name[result_index]
-plt.imshow(image)
-plt.title(f"Disease Name: {model_prediction}")
-plt.xticks([])
-plt.yticks([])
-plt.show()
-
-print(f"Predicted Disease: {model_prediction}")
-print(f"Confidence: {np.max(prediction)*100:.2f}%")
+# The demo will automatically:
+# 1. Load and display the image
+# 2. Preprocess it for the model
+# 3. Make a prediction
+# 4. Show the disease name and confidence
 ```
 
-## Dataset
-- **Total Images**: 3,998 mango leaf images
-- **Training Set**: 2,798 images (70%)
-- **Validation Set**: 800 images (20%)
-- **Test Set**: 400 images (10%)
-- **Image Size**: 256×256 pixels
-- **Format**: RGB color images
+## 🎯 Supported Disease Classes
+The model detects 8 different conditions:
 
-## Installation & Requirements
+| Class Index | Disease Name | Description |
+|-------------|--------------|-------------|
+| 0 | **Anthracnose** | Fungal disease causing dark lesions |
+| 1 | **Bacterial Canker** | Bacterial infection with canker formation |
+| 2 | **Cutting Weevil** | Pest damage from weevil infestations |
+| 3 | **Die Back** | Progressive dying of twigs and branches |
+| 4 | **Gall Midge** | Pest-induced gall formations |
+| 5 | **Healthy** | Disease-free mango leaves |
+| 6 | **Powdery Mildew** | Fungal infection with white coating |
+| 7 | **Sooty Mould** | Fungal growth on honeydew |
 
-### Prerequisites
-- Python 3.7+
-- TensorFlow 2.x
-- Google Colab (for original implementation)
+## 📊 Model Performance
 
-### Required Libraries
-```bash
-pip install tensorflow matplotlib pillow scikit-learn seaborn pandas opencv-python
-```
+### Overall Metrics:
+- **Accuracy**: 90%
+- **Precision**: 91% (macro average)
+- **Recall**: 90% (macro average)
+- **F1-Score**: 90% (macro average)
 
-## Usage
+### Per-Class Performance:
+| Disease | Precision | Recall | F1-Score |
+|---------|-----------|--------|----------|
+| Anthracnose | 98% | 86% | 91% |
+| Bacterial Canker | 90% | 86% | 88% |
+| Cutting Weevil | 100% | 100% | 100% |
+| Die Back | 98% | 98% | 98% |
+| Gall Midge | 76% | 90% | 83% |
+| Healthy | 97% | 91% | 94% |
+| Powdery Mildew | 87% | 81% | 84% |
+| Sooty Mould | 81% | 90% | 85% |
 
-### 1. Data Preparation
-```python
-# Mount Google Drive and organize dataset
-from google.colab import drive
-drive.mount('/content/drive')
+## 🏗️ Model Architecture
 
-# Dataset will be automatically split into train/validation/test sets
-```
+### Technical Specifications:
+- **Input Size**: 256 × 256 × 3 (RGB images)
+- **Architecture**: Sequential CNN with 5 convolutional blocks
+- **Filters**: 32 → 64 → 128 → 256 → 512 (progressive increase)
+- **Dropout**: 25% (convolutional), 40% (dense)
+- **Output**: 8-class softmax classification
 
-### 2. Model Training
-```python
-# The model automatically trains with optimized parameters:
-# - Learning rate: 0.0001
-# - Batch size: 32
-# - Epochs: 10
-# - Optimizer: Adam
-# - Loss: Categorical Crossentropy
-```
-
-### 3. Making Predictions (as shown above)
-Use the provided inference code to test the model on new mango leaf images.
-
-## File Structure
-```
-Mango_Disease_Detection/
-├── Mango_Disease_detection.ipynb     # Main notebook
-├── mango_disease_model.keras         # Trained model
-├── training_history.json            # Training metrics
-├── dataset/
-│   ├── train/                       # Training images
-│   ├── validation/                  # Validation images
-│   └── test/                        # Test images
-└── README.md                        # This file
-```
-
-## Model Details
-
-### Architecture Summary
+### Model Summary:
 ```
 Total params: 70,787,450 (270.03 MB)
 Trainable params: 23,595,816 (90.01 MB)
@@ -177,34 +100,181 @@ Non-trainable params: 0 (0.00 B)
 Optimizer params: 47,191,634 (180.02 MB)
 ```
 
-### Key Features Implemented
-- **Data Preprocessing**: Automatic dataset splitting (70/20/10)
-- **Image Processing**: Resizing to 256×256 pixels with RGB conversion
-- **Model Optimization**: Dropout regularization and learning rate optimization
-- **Evaluation Metrics**: Comprehensive classification reports and confusion matrices
+## 📋 Dataset Information
 
-## Results & Insights
-- The model shows excellent performance on most disease classes
-- Cutting Weevil detection achieves perfect accuracy
-- Some confusion exists between similar-looking diseases
-- The model generalizes well to unseen data
+### Distribution:
+- **Total Images**: 3,998
+- **Training Set**: 2,798 images (70%)
+- **Validation Set**: 800 images (20%)
+- **Test Set**: 400 images (10%)
 
-## Applications
-- **Agricultural Monitoring**: Early detection of mango diseases
-- **Farm Management**: Targeted treatment planning
-- **Research**: Study of disease patterns and progression
-- **Education**: Training tool for agricultural students
+### Class Balance:
+- Each class contains approximately 500 images
+- Balanced distribution across all 8 categories
+- High-quality labeled images
 
-## Limitations & Future Work
+## ⚙️ Installation & Setup
+
+### Prerequisites:
+- Python 3.7+
+- TensorFlow 2.x
+- Google Colab (recommended) or local environment
+
+### Required Libraries:
+```bash
+pip install tensorflow matplotlib pillow scikit-learn seaborn pandas opencv-python numpy
+```
+
+## 🛠️ Usage Instructions
+
+### Option 1: Demo & Predictions (Recommended)
+1. Open `demo_for_mango_disease_detection_.ipynb`
+2. Ensure `mango_disease_model.keras` is available
+3. Modify `image_path` to point to your mango leaf image
+4. Run all cells for instant predictions
+
+### Option 2: Full Training
+1. Open `Mango_Disease_detection.ipynb`
+2. Mount your Google Drive with the dataset
+3. Run all cells to train from scratch
+4. Model will be saved automatically
+
+### Option 3: Custom Integration
+```python
+# Integrate into your own code
+from tensorflow import keras
+import cv2
+import numpy as np
+
+class MangoDiseaseDetector:
+    def __init__(self, model_path):
+        self.model = keras.models.load_model(model_path)
+        self.class_names = [
+            'Anthracnose', 'Bacterial Canker', 'Cutting Weevil', 
+            'Die Back', 'Gall Midge', 'Healthy', 
+            'Powdery Mildew', 'Sooty Mould'
+        ]
+    
+    def predict(self, image_path):
+        # Preprocess image
+        img = tf.keras.preprocessing.image.load_img(
+            image_path, target_size=(256, 256)
+        )
+        input_arr = tf.keras.preprocessing.image.img_to_array(img)
+        input_arr = np.array([input_arr])
+        
+        # Make prediction
+        prediction = self.model.predict(input_arr)
+        result_index = np.argmax(prediction)
+        
+        return {
+            'disease': self.class_names[result_index],
+            'confidence': float(np.max(prediction)),
+            'all_predictions': prediction[0].tolist()
+        }
+```
+
+## 📈 Training Details
+
+### Optimization:
+- **Optimizer**: Adam (learning_rate=0.0001)
+- **Loss Function**: Categorical Crossentropy
+- **Batch Size**: 32
+- **Epochs**: 10
+- **Metrics**: Accuracy
+
+### Training Progress:
+- Epoch 1-3: Rapid accuracy improvement (25% → 82%)
+- Epoch 4-7: Refinement and stabilization (82% → 94%)
+- Epoch 8-10: Fine-tuning and overfitting prevention
+
+## 🎮 Demo Features
+
+### What the Demo Provides:
+- ✅ Complete inference pipeline
+- ✅ Real-time image preprocessing
+- ✅ Visual results with disease name
+- ✅ Confidence scores
+- ✅ Easy image path configuration
+- ✅ Model architecture inspection
+
+### Example Output:
+```
+Predicted Disease: Anthracnose
+Confidence: 95.23%
+```
+
+## 🌟 Key Features
+
+### For End Users:
+- **User-Friendly**: Simple demo notebook for instant predictions
+- **High Accuracy**: 90% reliable disease detection
+- **Fast Inference**: Quick predictions on new images
+- **Visual Results**: Clear display of input and output
+
+### For Developers:
+- **Modular Code**: Easy to integrate into applications
+- **Well-Documented**: Clear code structure and comments
+- **Extensible**: Easy to add new disease classes
+- **Reproducible**: Complete training pipeline provided
+
+## 🚨 Limitations & Considerations
+
+### Current Limitations:
 - Limited to 8 specific disease classes
-- Performance varies across different disease types
-- Potential for improvement with more diverse datasets
-- Could benefit from data augmentation techniques
+- Requires clear, well-lit leaf images
+- Performance varies with image quality
+- Model trained on specific mango varieties
+
+### Image Requirements:
+- **Format**: JPG, JPEG, or PNG
+- **Size**: Minimum 256×256 pixels (auto-resized)
+- **Quality**: Clear, focused images of individual leaves
+- **Background**: Plain backgrounds work best
+
+## 🔮 Future Enhancements
+
+### Planned Improvements:
+- Expand to more disease classes
+- Mobile app development
+- Real-time camera integration
+- Multi-plant species support
 
 
-## Contributors
-This project demonstrates the application of deep learning in agricultural technology, specifically for plant disease detection and classification.
+### Research Directions:
+- Transfer learning with newer architectures
+- Data augmentation techniques
+- Ensemble methods for improved accuracy
+- Explainable AI for prediction interpretability
 
-## License
+## 🤝 Contributing
+
+We welcome contributions! Areas for improvement:
+- Additional disease classes
+- Performance optimization
+- Documentation improvements
+- Translation to other languages
+
+## 📝 Citation
+
+If you use this project in your research, please cite:
+```
+Mango Disease Detection using Deep Learning (2024)
+CNN-based classification of 8 mango leaf diseases
+Accuracy: 90%, Dataset: 3,998 images
+```
+
+## 📞 Support
+
+For questions or issues:
+1. Check the demo notebook for usage examples
+2. Review the training notebook for technical details
+3. Ensure all dependencies are properly installed
+
+## 📄 License
+
 This project is intended for educational and research purposes. Please ensure proper attribution when using or modifying the code.
 
+---
+
+**Ready to detect mango diseases?** Run `demo_for_mango_disease_detection_.ipynb` to get started immediately!
